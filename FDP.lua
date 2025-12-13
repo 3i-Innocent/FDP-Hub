@@ -1,71 +1,346 @@
 --[[ 
-    FDP ABSOLUTE - FINAL GOD MODE
-    Version: OMEGA (Full Arsenal)
-    Target: Delta / Fluxus / Hydrogen / Arceus
-    
-    [+] NEURAL BACKDOOR HUNTER ADDED
-    [+] ALL PREVIOUS TOOLS INCLUDED
+    FDP ABSOLUTE - NATIVE EDITION
+    Status: OFFLINE COMPATIBLE (Zero External Libs)
+    Features: SS Hunter, Lucky Patcher, Smart Repeater, Data Hook
 ]]
 
-local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
-local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
-local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
+local Players = game:GetService("Players")
+local CoreGui = game:GetService("CoreGui")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
 
-local Window = Fluent:CreateWindow({
-    Title = "FDP ABSOLUTE",
-    SubTitle = "God Mode + SS Hunter",
-    TabWidth = 160,
-    Size = UDim2.fromOffset(600, 480),
-    Acrylic = true,
-    Theme = "Dark",
-    MinimizeKey = Enum.KeyCode.RightControl
-})
-
--- --- VARIABLES GLOBALES ---
-local Tabs = {
-    Home = Window:AddTab({ Title = "Inicio", Icon = "home" }),
-    Backdoor = Window:AddTab({ Title = "SS Hunter (NEW)", Icon = "skull" }), -- LA NOVEDAD
-    Economy = Window:AddTab({ Title = "Economy (IAP)", Icon = "credit-card" }),
-    Remote = Window:AddTab({ Title = "Remote Warfare", Icon = "swords" }),
-    DataUI = Window:AddTab({ Title = "Data & UI Break", Icon = "database" }),
-    Auto = Window:AddTab({ Title = "Automation", Icon = "bolt" }),
-    Eng = Window:AddTab({ Title = "Ingeniería", Icon = "cpu" }),
-    Player = Window:AddTab({ Title = "Jugador", Icon = "user" }),
-    Settings = Window:AddTab({ Title = "Config", Icon = "settings" })
+-- --- CONFIGURACIÓN VISUAL ---
+local GUI_THEME = {
+    Bg = Color3.fromRGB(20, 20, 20),
+    Dark = Color3.fromRGB(15, 15, 15),
+    Accent = Color3.fromRGB(170, 0, 255), -- Morado Hacker
+    Text = Color3.fromRGB(255, 255, 255)
 }
 
-local Options = Fluent.Options
-local Notify = function(t, c) Fluent:Notify({Title=t, Content=c, Duration=5}) end
+-- --- LIMPIEZA ---
+if CoreGui:FindFirstChild("FDP_Native") then CoreGui.FDP_Native:Destroy() end
 
--- --- PESTAÑA 1: DASHBOARD ---
-Tabs.Home:AddParagraph({
-    Title = "Sistema Supremo Cargado",
-    Content = "El arsenal definitivo. Nada ha sido simplificado.\n\n" ..
-    "🔥 SS Hunter: Detector de backdoors neuronal (Nil instances + Heurística).\n" ..
-    "💰 Economy: Bypass de compras y robo de IDs.\n" ..
-    "⚔️ Warfare: Ataque de remotos y lógica difusa.\n" ..
-    "🛡️ Data/UI: Manipulación total del cliente."
-})
+-- --- CREACIÓN GUI ---
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "FDP_Native"
+pcall(function() ScreenGui.Parent = CoreGui end)
+if not ScreenGui.Parent then ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui") end
+
+local Main = Instance.new("Frame")
+Main.Name = "Main"
+Main.Size = UDim2.new(0, 500, 0, 350)
+Main.Position = UDim2.new(0.5, -250, 0.5, -175)
+Main.BackgroundColor3 = GUI_THEME.Bg
+Main.BorderSizePixel = 0
+Main.Parent = ScreenGui
+
+local UICorner = Instance.new("UICorner", Main)
+UICorner.CornerRadius = UDim.new(0, 10)
+
+-- HEADER
+local Header = Instance.new("Frame")
+Header.Size = UDim2.new(1, 0, 0, 40)
+Header.BackgroundColor3 = GUI_THEME.Dark
+Header.Parent = Main
+Instance.new("UICorner", Header).CornerRadius = UDim.new(0, 10)
+
+local Title = Instance.new("TextLabel")
+Title.Text = "FDP ABSOLUTE [NATIVE]"
+Title.Size = UDim2.new(1, -50, 1, 0)
+Title.BackgroundTransparency = 1
+Title.TextColor3 = GUI_THEME.Accent
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 18
+Title.Parent = Header
+
+local Close = Instance.new("TextButton")
+Close.Text = "X"
+Close.Size = UDim2.new(0, 40, 1, 0)
+Close.Position = UDim2.new(1, -40, 0, 0)
+Close.BackgroundTransparency = 1
+Close.TextColor3 = Color3.fromRGB(255, 50, 50)
+Close.Font = Enum.Font.GothamBold
+Close.TextSize = 18
+Close.Parent = Header
+Close.MouseButton1Click:Connect(function() ScreenGui:Destroy() end)
+
+-- TABS CONTAINER
+local TabFrame = Instance.new("ScrollingFrame")
+TabFrame.Size = UDim2.new(0, 120, 1, -50)
+TabFrame.Position = UDim2.new(0, 10, 0, 45)
+TabFrame.BackgroundColor3 = GUI_THEME.Dark
+TabFrame.BorderSizePixel = 0
+TabFrame.Parent = Main
+Instance.new("UICorner", TabFrame).CornerRadius = UDim.new(0, 8)
+
+local TabList = Instance.new("UIListLayout", TabFrame)
+TabList.Padding = UDim.new(0, 5)
+TabList.SortOrder = Enum.SortOrder.LayoutOrder
+
+-- PAGES CONTAINER
+local PageFrame = Instance.new("Frame")
+PageFrame.Size = UDim2.new(1, -145, 1, -50)
+PageFrame.Position = UDim2.new(0, 140, 0, 45)
+PageFrame.BackgroundTransparency = 1
+PageFrame.Parent = Main
+
+-- --- FUNCIONES UI ---
+local CurrentPage = nil
+
+function CreateTab(Name)
+    local Page = Instance.new("ScrollingFrame")
+    Page.Name = Name
+    Page.Size = UDim2.new(1, 0, 1, 0)
+    Page.BackgroundTransparency = 1
+    Page.Visible = false
+    Page.ScrollBarThickness = 4
+    Page.Parent = PageFrame
+    
+    local List = Instance.new("UIListLayout", Page)
+    List.Padding = UDim.new(0, 8)
+    
+    local Btn = Instance.new("TextButton")
+    Btn.Text = Name
+    Btn.Size = UDim2.new(1, 0, 0, 35)
+    Btn.BackgroundColor3 = GUI_THEME.Bg
+    Btn.TextColor3 = GUI_THEME.Text
+    Btn.Font = Enum.Font.Gotham
+    Btn.TextSize = 12
+    Btn.Parent = TabFrame
+    Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 6)
+    
+    Btn.MouseButton1Click:Connect(function()
+        if CurrentPage then CurrentPage.Visible = false end
+        CurrentPage = Page
+        Page.Visible = true
+    end)
+    
+    return Page
+end
+
+function CreateButton(Page, Text, Callback)
+    local Btn = Instance.new("TextButton")
+    Btn.Text = Text
+    Btn.Size = UDim2.new(1, -10, 0, 40)
+    Btn.BackgroundColor3 = GUI_THEME.Dark
+    Btn.TextColor3 = GUI_THEME.Text
+    Btn.Font = Enum.Font.GothamSemibold
+    Btn.TextSize = 14
+    Btn.Parent = Page
+    Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 6)
+    Btn.MouseButton1Click:Connect(Callback)
+end
+
+function CreateToggle(Page, Text, Callback)
+    local Enabled = false
+    local Btn = Instance.new("TextButton")
+    Btn.Text = Text .. " [OFF]"
+    Btn.Size = UDim2.new(1, -10, 0, 40)
+    Btn.BackgroundColor3 = GUI_THEME.Dark
+    Btn.TextColor3 = Color3.fromRGB(150, 150, 150)
+    Btn.Font = Enum.Font.GothamSemibold
+    Btn.TextSize = 14
+    Btn.Parent = Page
+    Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 6)
+    
+    Btn.MouseButton1Click:Connect(function()
+        Enabled = not Enabled
+        if Enabled then
+            Btn.Text = Text .. " [ON]"
+            Btn.TextColor3 = GUI_THEME.Accent
+            Btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        else
+            Btn.Text = Text .. " [OFF]"
+            Btn.TextColor3 = Color3.fromRGB(150, 150, 150)
+            Btn.BackgroundColor3 = GUI_THEME.Dark
+        end
+        Callback(Enabled)
+    end)
+end
 
 -- ============================================================================
--- PESTAÑA 2: SS HUNTER (DETECTOR ULTRA AVANZADO)
+-- PESTAÑA: SS HUNTER (DETECTOR BACKDOORS)
 -- ============================================================================
+local PageSS = CreateTab("SS Hunter")
 
-local ScannedRemotes = {}
-local SelectedSS = nil
+local DetectedSS = nil
 
--- Base de datos de firmas de Backdoors famosos
-local Signatures = {
-    "c00lkidd", "TeamC00lkidd", "Admin", "DoNotDelete", "RobloxClassic", 
-    "Sertanejo", "OneMoreTime", "Ahhhhh", "AdminPanel", "Panda", 
-    "Krypton", "Code", "Run", "Execute", "By", "Chaos", "Check",
-    "rafjel", "k4scripts", "monster", "shit", "bitch", "memohack"
-}
+CreateButton(PageSS, "☢️ SCAN BACKDOORS (NEURAL)", function()
+    local Targets = game:GetDescendants()
+    if getnilinstances then for _,v in pairs(getnilinstances()) do table.insert(Targets, v) end end
+    
+    local Count = 0
+    for _, v in pairs(Targets) do
+        if v:IsA("RemoteEvent") or v:IsA("RemoteFunction") then
+            if v.Name:lower():find("admin") or v.Name:lower():find("ss") or v.Name:lower():find("backdoor") then
+                if not v.Parent:IsA("ReplicatedStorage") then -- Sospechoso
+                    print("BACKDOOR FOUND: " .. v.GetFullName(v))
+                    DetectedSS = v
+                    Count = Count + 1
+                end
+            end
+        end
+    end
+    if Count > 0 then
+        Title.Text = "¡ALERTA: " .. Count .. " BACKDOORS!"
+    else
+        Title.Text = "Seguro: 0 Backdoors"
+    end
+end)
 
--- Algoritmo de Puntuación de Amenaza
-local function CalculateThreat(obj)
-    local score = 0
-    local notes = ""
+CreateButton(PageSS, "💉 INYECTAR EN ÚLTIMO ENCONTRADO", function()
+    if DetectedSS then
+        pcall(function()
+            DetectedSS:FireServer(tonumber(4952280696)) -- IY ID
+            DetectedSS:FireServer("require(4952280696).load('"..LocalPlayer.Name.."')")
+        end)
+    end
+end)
+
+-- ============================================================================
+-- PESTAÑA: LUCKY PATCHER (ECONOMY)
+-- ============================================================================
+local PageEco = CreateTab("Economy")
+
+CreateToggle(PageEco, "ACTIVATE LUCKY PATCHER", function(Val)
+    if Val then
+        local old
+        old = hookmetamethod(game, "__namecall", function(self, ...)
+            local m = getnamecallmethod()
+            if not checkcaller() then
+                if m == "UserOwnsGamePassAsync" then return true end
+                if m == "PlayerOwnsAsset" then return true end
+                if m == "UserHasBadgeAsync" then return true end
+                if m == "GetProductInfo" then return {Name="Hacked", PriceInRobux=0, ProductId=0} end
+            end
+            return old(self, ...)
+        end)
+    end
+end)
+
+CreateToggle(PageEco, "SIMULAR COMPRA (FAKE RECEIPT)", function(Val)
+    if Val then
+        local Market = game:GetService("MarketplaceService")
+        local old
+        old = hookmetamethod(game, "__namecall", function(self, ...)
+            local m = getnamecallmethod()
+            local args = {...}
+            if not checkcaller() and m:find("Purchase") then
+                local id = args[1] or args[2]
+                task.spawn(function()
+                    pcall(function() Market.PromptGamePassPurchaseFinished:Fire(LocalPlayer, id, true) end)
+                    pcall(function() Market.PromptProductPurchaseFinished:Fire(LocalPlayer, id, true) end)
+                end)
+                return nil
+            end
+            return old(self, ...)
+        end)
+    end
+end)
+
+-- ============================================================================
+-- PESTAÑA: DATA HOOK (VALUES)
+-- ============================================================================
+local PageData = CreateTab("Data Hook")
+
+CreateToggle(PageData, "HOOK VALUES (VIP/MONEY)", function(Val)
+    if Val then
+        local old
+        old = hookmetamethod(game, "__index", function(self, key)
+            if not checkcaller() and key == "Value" then
+                local n = self.Name:lower()
+                if self:IsA("BoolValue") and (n:find("vip") or n:find("pass")) then return true end
+                if (self:IsA("IntValue") or self:IsA("NumberValue")) and (n:find("money") or n:find("cash")) then 
+                    if old(self, key) < 100 then return 999999 end
+                end
+            end
+            return old(self, key)
+        end)
+    end
+end)
+
+CreateButton(PageData, "💉 INFECTAR MÓDULOS (CHECKPASS)", function()
+    for _, v in pairs(game:GetService("ReplicatedStorage"):GetDescendants()) do
+        if v:IsA("ModuleScript") and (v.Name:find("Check") or v.Name:find("Pass")) then
+            local s, m = pcall(require, v)
+            if s and type(m) == "table" then
+                for k, f in pairs(m) do
+                    if type(f) == "function" and hookfunction then
+                        hookfunction(f, function() return true end)
+                    end
+                end
+            end
+        end
+    end
+end)
+
+-- ============================================================================
+-- PESTAÑA: UI & AUTOMATION
+-- ============================================================================
+local PageAuto = CreateTab("Auto & UI")
+
+CreateButton(PageAuto, "👁️ FORZAR PANELES OCULTOS", function()
+    for _, v in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
+        if v.Name:lower():find("admin") or v.Name:lower():find("vip") then
+            if v:IsA("Frame") then v.Visible = true; v.Position = UDim2.new(0.5,0,0.5,0) end
+            if getconnections then
+                for _,c in pairs(getconnections(v:GetPropertyChangedSignal("Visible"))) do c:Disable() end
+            end
+        end
+    end
+end)
+
+local Farming = false
+CreateToggle(PageAuto, "AUTO-FARM (COIN/EGG)", function(Val)
+    Farming = Val
+    if Val then
+        task.spawn(function()
+            while Farming do
+                pcall(function()
+                    for _, v in pairs(workspace:GetDescendants()) do
+                        if (v.Name:find("Coin") or v.Name:find("Egg")) and v:IsA("BasePart") then
+                            LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
+                            task.wait(0.2)
+                        end
+                    end
+                end)
+                task.wait(1)
+            end
+        end)
+    end
+end)
+
+-- ============================================================================
+-- PESTAÑA: TOOLS
+-- ============================================================================
+local PageTools = CreateTab("Tools")
+
+CreateButton(PageTools, "📂 Dex Explorer", function() loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/dex.lua"))() end)
+CreateButton(PageTools, "🐢 Turtle Spy", function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Turtle-Brand/Turtle-Spy/main/source.lua", true))() end)
+CreateButton(PageTools, "♾️ Infinite Yield", function() loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))() end)
+
+-- DRAGGABLE
+local dragging, dragInput, dragStart, startPos
+Main.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true; dragStart = input.Position; startPos = Main.Position
+        input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragging = false end end)
+    end
+end)
+Main.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end
+end)
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - dragStart
+        Main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+-- PÁGINA INICIAL
+CurrentPage = PageSS
+PageSS.Visible = true    local notes = ""
     local name = obj.Name:lower()
     local parent = obj.Parent and obj.Parent.Name:lower() or "nil"
 
