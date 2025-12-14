@@ -1,15 +1,3 @@
---[[
-╔══════════════════════════════════════════════════════════════════════════════════╗
-║                     FDP ABSOLUTE - HYPER ELITE FUSION                           ║
-║                  Sistema de Bypass + Backdoor Scanner Unificado                 ║
-║                       Loadstring-Compatible | GitHub Ready                      ║
-║                             NO SIMPLIFICATIONS - FULL ELITE                     ║
-╚══════════════════════════════════════════════════════════════════════════════════╝
-]]
-
--- ================================================================================
--- SISTEMA DE CARGA SEGURA Y VERIFICACIÓN DE MÓDULOS
--- ================================================================================
 local function SafeLoadModule(name, url, fallback)
     local success, result = pcall(function()
         local content = game:HttpGet(url, true)
