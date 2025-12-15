@@ -2285,7 +2285,7 @@ if hookmetamethod and (not checkcaller or type(checkcaller) == "function") then
                     if self == Services.Marketplace then
                         task.spawn(function()
                             pcall(function()
-                                Services.Marketplace.PromptProductPurchaseFinished:Fire(LocalPlayer, select(1, ...) or 0, true)
+                                Services.Marketplace.PromptProductPurchaseFinished:Fire(LocalPlayer, args[1] or 0, true)
                             end)
                         end)
                         return true
