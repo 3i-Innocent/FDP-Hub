@@ -1,3 +1,16 @@
+if not game:IsLoaded() then game.Loaded:Wait() end
+
+--[[
+╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║                                                         FDP ABSOLUTE - ULTIMATE ELITE FUSION                                      
+║                                                    Sistema de Explotación y Bypass Completo                                    
+║                                                   Fusion Jerárquica Completa - Delta Optimized                                   
+╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+]]
+
+-- ============================================================================
+-- SISTEMA DE CARGA SEGURA Y VERIFICACIÓN
+-- ============================================================================
 local function SafeLoad(name, url, fallback)
     local success, result = pcall(function()
         local content = game:HttpGet(url, true)
@@ -14,58 +27,482 @@ local function SafeLoad(name, url, fallback)
     return result
 end
 
--- Cargar Fluent UI con sistema de respaldo
+-- Cargar Fluent UI con sistema de respaldo corregido para Delta
 local Fluent, SaveManager, InterfaceManager
 local function LoadUI()
-    Fluent = SafeLoad("Fluent", "https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua")
-    
-    if Fluent then
-        SaveManager = SafeLoad("SaveManager", "https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua")
-        InterfaceManager = SafeLoad("InterfaceManager", "https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua")
-    else
-        -- Sistema de UI de respaldo minimalista
-        Fluent = {
-            CreateWindow = function(config)
+    -- Intentamos cargar la UI original
+    Fluent = SafeLoad("Fluent", "https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua", function()
+        -- Sistema de UI de respaldo minimalista (Fix para que no crashee si falla HTTP)
+        return {
+            CreateWindow = function(self, config)
+                print("⚠️ Usando UI de respaldo interna")
                 return {
-                    AddTab = function(tabConfig)
-                        local tab = {
-                            AddSection = function(sectionConfig)
+                    AddTab = function(self, tabConfig)
+                        return {
+                            AddSection = function(self, sectionConfig)
+                                return true
+                            end,
+                            AddParagraph = function(self, paraConfig)
                                 return {
-                                    AddToggle = function(toggleConfig) 
-                                        toggleConfig.Callback = toggleConfig.Callback or function() end
-                                        return {Value = false, SetValue = function() end} 
-                                    end,
-                                    AddButton = function(buttonConfig) 
-                                        buttonConfig.Callback = buttonConfig.Callback or function() end
-                                        return {} 
-                                    end,
-                                    AddSlider = function(sliderConfig) 
-                                        sliderConfig.Callback = sliderConfig.Callback or function() end
-                                        return {Value = sliderConfig.Default or 0, SetValue = function() end} 
-                                    end,
-                                    AddDropdown = function(dropdownConfig) 
-                                        dropdownConfig.Callback = dropdownConfig.Callback or function() end
-                                        return {Value = dropdownConfig.Default or "", SetValue = function() end, Values = dropdownConfig.Values or {}} 
-                                    end,
-                                    AddInput = function(inputConfig) 
-                                        inputConfig.Callback = inputConfig.Callback or function() end
-                                        return {Value = inputConfig.Default or "", SetValue = function() end} 
-                                    end,
-                                    AddParagraph = function(paraConfig)
-                                        return {
-                                            SetDesc = function(text) print("Paragraph: " .. text) end,
-                                            SetTitle = function(text) print("Title: " .. text) end
-                                        }
-                                    end
+                                    SetDesc = function(self, text) print("Paragraph Desc: " .. text) end,
+                                    SetTitle = function(self, text) print("Paragraph Title: " .. text) end
                                 }
+                            end,
+                            AddToggle = function(self, toggleConfig) 
+                                toggleConfig.Callback = toggleConfig.Callback or function() end
+                                return {Value = false, SetValue = function() end} 
+                            end,
+                            AddButton = function(self, buttonConfig) 
+                                buttonConfig.Callback = buttonConfig.Callback or function() end
+                                return {} 
+                            end,
+                            AddSlider = function(self, sliderConfig) 
+                                sliderConfig.Callback = sliderConfig.Callback or function() end
+                                return {Value = sliderConfig.Default or 0, SetValue = function() end} 
+                            end,
+                            AddDropdown = function(self, dropdownConfig) 
+                                dropdownConfig.Callback = dropdownConfig.Callback or function() end
+                                return {Value = dropdownConfig.Default or "", SetValue = function() end, Values = dropdownConfig.Values or {}} 
+                            end,
+                            AddInput = function(self, inputConfig) 
+                                inputConfig.Callback = inputConfig.Callback or function() end
+                                return {Value = inputConfig.Default or "", SetValue = function() end} 
                             end
                         }
-                        return tab
                     end,
                     SelectTab = function() end
                 }
             end,
             Options = {},
+            Notify = function(self, notifyConfig)
+                print("📢 " .. (notifyConfig.Title or "Notification") .. ": " .. (notifyConfig.Content or ""))
+            end
+        }
+    end)
+    
+    -- Cargar Addons si Fluent cargó correctamente
+    if Fluent and not Fluent.CreateWindow then -- Check si es la version real
+         SaveManager = SafeLoad("SaveManager", "https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua")
+         InterfaceManager = SafeLoad("InterfaceManager", "https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua")
+    else
+        SaveManager = {SetLibrary = function() end, IgnoreThemeSettings = function() end, SetIgnoreIndexes = function() end, SetFolder = function() end}
+        InterfaceManager = {SetLibrary = function() end, SetFolder = function() end}
+    end
+end
+
+LoadUI()
+
+-- ============================================================================
+-- SISTEMAS CENTRALES FUSIONADOS
+-- ============================================================================
+local CoreBypassSystem = {
+    Version = "3.0.0",
+    Build = "Fusion Elite",
+    Hooks = {},
+    States = {
+        PurchaseBypass = false,
+        GamepassBypass = false,
+        StatsBypass = false,
+        AutoHookRemotes = true,
+        ModuleInjection = true,
+        AntiDetection = true,
+        PerformanceMode = 2,
+        ExecutorMode = "Delta",
+        PurchaseType = "Todos",
+        VIPLevel = "VIP God",
+        ActivePreset = "GOD",
+        SelectedModule = nil,
+        SelectedFunction = nil
+    },
+    Cache = {},
+    Telemetry = {}
+}
+
+-- Sistema de Telemetría Fusionado
+local TelemetrySystem = {
+    Logs = {},
+    Metrics = {},
+    Performance = {},
+    Alerts = {}
+}
+
+local function LogEvent(category, severity, message, data)
+    local entry = {
+        Timestamp = os.time(),
+        Category = category,
+        Severity = severity,
+        Level = severity, -- Compatibilidad con segundo script
+        Message = message,
+        Data = data,
+        Stack = debug.traceback(),
+        Game = game.PlaceId
+    }
+    
+    table.insert(TelemetrySystem.Logs, entry)
+    
+    -- Almacenamiento persistente
+    if #TelemetrySystem.Logs > 1000 then
+        table.remove(TelemetrySystem.Logs, 1)
+    end
+    
+    -- Alertas críticas
+    if severity == "CRITICAL" or severity == "ERROR" or severity == "BYPASS" then
+        if Fluent and Fluent.Notify then
+            Fluent:Notify({
+                Title = severity == "CRITICAL" and "🚨 ALERTA CRÍTICA" or "⚠️ " .. severity,
+                Content = message,
+                Duration = severity == "CRITICAL" and 10 or 5
+            })
+        end
+        print(string.format("[%s] %s: %s", category, severity, message))
+    end
+    
+    return entry
+end
+
+-- Servicios críticos
+local Services = {
+    Marketplace = game:GetService("MarketplaceService"),
+    Players = game:GetService("Players"),
+    ReplicatedStorage = game:GetService("ReplicatedStorage"),
+    HttpService = game:GetService("HttpService"),
+    RunService = game:GetService("RunService"),
+    TeleportService = game:GetService("TeleportService")
+}
+
+local LocalPlayer = Services.Players.LocalPlayer
+
+-- ============================================================================
+-- MÓDULO 1: SISTEMA DE BYPASS DE MARKETPLACE SERVICE COMPLETO
+-- ============================================================================
+local MarketplaceBypass = {
+    Methods = {
+        "PromptProductPurchase",
+        "PromptGamePassPurchase", 
+        "PromptPremiumPurchase",
+        "PromptPurchase",
+        "ProcessReceipt",
+        "PerformPurchase"
+    },
+    Callbacks = {},
+    History = {}
+}
+
+function MarketplaceBypass:InstallHooks()
+    if not hookfunction then 
+        LogEvent("MARKETPLACE", "WARNING", "hookfunction no disponible")
+        return false 
+    end
+    
+    LogEvent("MARKETPLACE", "INFO", "Instalando hooks de MarketplaceService")
+    
+    -- Hook para PromptProductPurchase
+    local originalPromptProductPurchase = Services.Marketplace.PromptProductPurchase
+    hookfunction(originalPromptProductPurchase, function(player, productId, equipIfPurchased, currencyType)
+        if player == LocalPlayer and CoreBypassSystem.States.PurchaseBypass then
+            LogEvent("MARKETPLACE", "BYPASS", "PromptProductPurchase: " .. tostring(productId))
+            
+            -- Simular éxito de compra
+            task.spawn(function()
+                pcall(function()
+                    Services.Marketplace.PromptProductPurchaseFinished:Fire(player, productId, true)
+                end)
+            end)
+            
+            -- Registrar en historial
+            table.insert(MarketplaceBypass.History, {
+                Type = "Product",
+                Id = productId,
+                Time = os.time(),
+                Success = true
+            })
+            
+            return true
+        end
+        return originalPromptProductPurchase(player, productId, equipIfPurchased, currencyType)
+    end)
+    
+    -- Hook para PromptGamePassPurchase
+    local originalPromptGamePassPurchase = Services.Marketplace.PromptGamePassPurchase
+    hookfunction(originalPromptGamePassPurchase, function(player, gamePassId)
+        if player == LocalPlayer and CoreBypassSystem.States.PurchaseBypass then
+            LogEvent("MARKETPLACE", "BYPASS", "PromptGamePassPurchase: " .. tostring(gamePassId))
+            
+            task.spawn(function()
+                pcall(function()
+                    Services.Marketplace.PromptGamePassPurchaseFinished:Fire(player, gamePassId, true)
+                end)
+            end)
+            
+            table.insert(MarketplaceBypass.History, {
+                Type = "GamePass",
+                Id = gamePassId,
+                Time = os.time(),
+                Success = true
+            })
+            
+            return true
+        end
+        return originalPromptGamePassPurchase(player, gamePassId)
+    end)
+    
+    -- Hook para ProcessReceipt (crítico)
+    local originalProcessReceipt = Services.Marketplace.ProcessReceipt
+    if originalProcessReceipt then
+        hookfunction(originalProcessReceipt, function(receiptInfo)
+            if CoreBypassSystem.States.PurchaseBypass then
+                LogEvent("MARKETPLACE", "BYPASS", "ProcessReceipt bypassed")
+                return Enum.ProductPurchaseDecision.PurchaseGranted
+            end
+            return originalProcessReceipt(receiptInfo)
+        end)
+    end
+    
+    -- Hook para todas las funciones de compra vía __namecall
+    if hookmetamethod then
+        local originalNamecall 
+        originalNamecall = hookmetamethod(game, "__namecall", function(self, ...)
+            local method = getnamecallmethod()
+            local args = {...}
+            
+            if CoreBypassSystem.States.PurchaseBypass and (not checkcaller or not checkcaller()) then
+                -- Detectar cualquier método de compra
+                if method and (method:lower():find("purchase") or method:lower():find("buy")) then
+                    LogEvent("MARKETPLACE", "BYPASS", "Purchase detected: " .. tostring(method))
+                    
+                    -- Simular éxito
+                    if self == Services.Marketplace then
+                        task.spawn(function()
+                            pcall(function()
+                                Services.Marketplace.PromptProductPurchaseFinished:Fire(LocalPlayer, args[1] or 0, true)
+                            end)
+                        end)
+                        return true
+                    end
+                end
+            end
+            
+            return originalNamecall(self, ...)
+        end)
+        MarketplaceBypass.OriginalNamecall = originalNamecall
+    end
+    
+    return true
+end
+
+-- ============================================================================
+-- MÓDULO 2: BYPASS DE GAMEPASSES Y VIP COMPLETO
+-- ============================================================================
+local GamepassBypass = {
+    Methods = {
+        "UserOwnsGamePassAsync",
+        "PlayerOwnsAsset",
+        "PlayerHasPass",
+        "IsPlayerIdInGroup",
+        "GetOwnedAssets",
+        "CheckOwnership"
+    },
+    OwnershipCache = {}
+}
+
+function GamepassBypass:InstallHooks()
+    if not hookfunction then 
+        LogEvent("GAMEPASS", "WARNING", "hookfunction no disponible")
+        return false 
+    end
+    
+    LogEvent("GAMEPASS", "INFO", "Instalando hooks de Gamepass")
+    
+    -- Hook para UserOwnsGamePassAsync
+    local originalUserOwnsGamePassAsync = Services.Marketplace.UserOwnsGamePassAsync
+    hookfunction(originalUserOwnsGamePassAsync, function(userId, gamePassId)
+        if CoreBypassSystem.States.GamepassBypass then
+            LogEvent("GAMEPASS", "BYPASS", "UserOwnsGamePassAsync: " .. tostring(gamePassId))
+            
+            -- Cache para mejorar rendimiento
+            local cacheKey = tostring(userId) .. "_" .. tostring(gamePassId)
+            if GamepassBypass.OwnershipCache[cacheKey] == nil then
+                GamepassBypass.OwnershipCache[cacheKey] = true
+            end
+            
+            return true
+        end
+        return originalUserOwnsGamePassAsync(userId, gamePassId)
+    end)
+    
+    -- Hook para PlayerOwnsAsset
+    local originalPlayerOwnsAsset = Services.Marketplace.PlayerOwnsAsset
+    hookfunction(originalPlayerOwnsAsset, function(player, assetId)
+        if CoreBypassSystem.States.GamepassBypass then
+            LogEvent("GAMEPASS", "BYPASS", "PlayerOwnsAsset: " .. tostring(assetId))
+            return true
+        end
+        return originalPlayerOwnsAsset(player, assetId)
+    end)
+    
+    -- Hook para GroupService
+    local GroupService = game:GetService("GroupService")
+    if GroupService then
+        local originalIsPlayerIdInGroup = GroupService.IsPlayerIdInGroup
+        if originalIsPlayerIdInGroup then
+            hookfunction(originalIsPlayerIdInGroup, function(userId, groupId)
+                if CoreBypassSystem.States.GamepassBypass then
+                    LogEvent("GAMEPASS", "BYPASS", "IsPlayerIdInGroup bypassed")
+                    return true
+                end
+                return originalIsPlayerIdInGroup(userId, groupId)
+            end)
+        end
+    end
+    
+    -- Hook __index para valores de VIP
+    if hookmetamethod then
+        local originalIndex 
+        originalIndex = hookmetamethod(game, "__index", function(self, key)
+            if CoreBypassSystem.States.GamepassBypass and (not checkcaller or not checkcaller()) then
+                -- Detectar valores de VIP
+                if typeof(self) == "Instance" and self:IsA("ValueBase") then
+                    local name = self.Name:lower()
+                    if (name:find("vip") or name:find("premium") or name:find("pass")) and 
+                       (key == "Value" or key == "value") then
+                        if self:IsA("BoolValue") then
+                            return true
+                        elseif self:IsA("StringValue") then
+                            return "VIP"
+                        end
+                    end
+                end
+                
+                -- Detectar propiedades de VIP
+                if key == "Vip" or key == "Premium" or key == "Gamepass" then
+                    return true
+                end
+            end
+            
+            return originalIndex(self, key)
+        end)
+        GamepassBypass.OriginalIndex = originalIndex
+    end
+    
+    return true
+end
+
+-- ============================================================================
+-- MÓDULO 3: EMULACIÓN DE STATS AVANZADA
+-- ============================================================================
+local StatsEmulation = {
+    Profiles = {
+        "PlayerData",
+        "PlayerStats", 
+        "PlayerInventory",
+        "PlayerCurrency",
+        "PlayerProgress"
+    },
+    Overrides = {},
+    Presets = {
+        VIP = {
+            Money = 9999999,
+            Gems = 999999,
+            Level = 100,
+            VIP = true,
+            Premium = true
+        },
+        GOD = {
+            Money = 999999999,
+            Gems = 9999999,
+            Level = 999,
+            VIP = true,
+            Premium = true,
+            Admin = true
+        },
+        STEALTH = {
+            Money = 5000,
+            Gems = 100,
+            Level = 10,
+            VIP = false
+        }
+    }
+}
+
+function StatsEmulation:InstallHooks()
+    if not hookmetamethod then 
+        LogEvent("STATS", "WARNING", "hookmetamethod no disponible")
+        return false 
+    end
+    
+    LogEvent("STATS", "INFO", "Instalando hooks de Stats")
+    
+    -- Hook __index para valores de estadísticas
+    local originalIndex 
+    originalIndex = hookmetamethod(game, "__index", function(self, key)
+        if CoreBypassSystem.States.StatsBypass and (not checkcaller or not checkcaller()) then
+            local className = self.ClassName
+            local name = self.Name:lower()
+            
+            -- Sistema de valores (IntValue, NumberValue, StringValue, BoolValue)
+            if className:find("Value") then
+                if key == "Value" or key == "value" then
+                    -- Buscar override específico
+                    local override = StatsEmulation.Overrides[name]
+                    if override ~= nil then
+                        return override
+                    end
+                    
+                    -- Aplicar presets
+                    local activePreset = CoreBypassSystem.States.ActivePreset
+                    if activePreset and StatsEmulation.Presets[activePreset] then
+                        for presetKey, presetValue in pairs(StatsEmulation.Presets[activePreset]) do
+                            if name:find(presetKey:lower()) then
+                                return presetValue
+                            end
+                        end
+                    end
+                    
+                    -- Overrides automáticos por nombre
+                    if name:find("money") or name:find("cash") or name:find("coins") then
+                        return 9999999
+                    elseif name:find("gem") or name:find("diamond") then
+                        return 999999
+                    elseif name:find("level") or name:find("xp") then
+                        return 100
+                    elseif name:find("vip") or name:find("premium") then
+                        return true
+                    elseif name:find("admin") or name:find("owner") then
+                        return true
+                    end
+                end
+            end
+            
+            -- Para DataStores simulados
+            if className == "ModuleScript" and name:find("data") then
+                if key == "GetAsync" or key == "Get" then
+                    return function(...)
+                        local args = {...}
+                        local keyName = tostring(args[1] or "")
+                        if keyName:find("money") or keyName:find("cash") then
+                            return 9999999
+                        elseif keyName:find("level") then
+                            return 100
+                        elseif keyName:find("vip") then
+                            return true
+                        end
+                        return nil
+                    end
+                end
+            end
+        end
+        
+        return originalIndex(self, key)
+    end)
+    
+    -- Hook __namecall para funciones de stats
+    local originalNamecall 
+    originalNamecall = hookmetamethod(game, "__namecall", function(self, ...)
+        local method = getnamecallmethod()
+        
+        if CoreBypassSystem.States.StatsBypass and (not checkcaller or not checkcaller()) then
+            -- Interceptar llamadas a GetAsync, UpdateAsync, etc.
+            if method == "GetAsync" or method            Options = {},
             Notify = function(notifyConfig)
                 print("📢 " .. (notifyConfig.Title or "Notification") .. ": " .. (notifyConfig.Content or ""))
             end
