@@ -1,14 +1,3 @@
---[[
-╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
-║                                                         FDP ABSOLUTE - ULTIMATE ELITE FUSION                                             ║
-║                                                    Sistema de Explotación y Bypass Completo                                             ║
-║                                                   Fusion Jerárquica Completa - Delta Optimized                                          ║
-╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
-]]
-
--- ============================================================================
--- SISTEMA DE CARGA SEGURA Y VERIFICACIÓN
--- ============================================================================
 local function SafeLoad(name, url, fallback)
     local success, result = pcall(function()
         local content = game:HttpGet(url, true)
@@ -2363,42 +2352,3 @@ task.spawn(function()
         Duration = 5
     })
 end)
-
--- ============================================================================
--- CÓDIGO FINAL PARA GITHUB - LOADSTRING READY
--- ============================================================================
-print([[
-╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
-║                                                                                                                                      ║
-║      ███████╗██████╗ ██████╗      █████╗ ███████╗ ██████╗ ██╗   ██╗████████╗███████╗    ███████╗██╗   ██╗███████╗██╗ ██████╗ ███╗   ██╗║
-║      ██╔════╝██╔══██╗██╔══██╗    ██╔══██╗██╔════╝██╔═══██╗██║   ██║╚══██╔══╝██╔════╝    ██╔════╝██║   ██║██╔════╝██║██╔═══██╗████╗  ██║║
-║      █████╗  ██║  ██║██████╔╝    ███████║███████╗██║   ██║██║   ██║   ██║   ███████╗    █████╗  ██║   ██║███████╗██║██║   ██║██╔██╗ ██║║
-║      ██╔══╝  ██║  ██║██╔══██╗    ██╔══██║╚════██║██║   ██║██║   ██║   ██║   ╚════██║    ██╔══╝  ██║   ██║╚════██║██║██║   ██║██║╚██╗██║║
-║      ██║     ██████╔╝██████╔╝    ██║  ██║███████║╚██████╔╝╚██████╔╝   ██║   ███████║    ██║     ╚██████╔╝███████║██║╚██████╔╝██║ ╚████║║
-║      ╚═╝     ╚═════╝ ╚═════╝     ╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═════╝    ╚═╝   ╚══════╝    ╚═╝      ╚═════╝ ╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═══╝║
-║                                                                                                                                      ║
-║                    ULTIMATE ELITE FUSION EDITION - DELTA OPTIMIZED - LOADSTRING READY                                               ║
-║                                                                                                                                      ║
-║                    Pestañas: 17 | Líneas: 15,000+ | Módulos: 10 | Compatibilidad: Delta/Fluxus/Synapse                              ║
-║                                                                                                                                      ║
-╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
-]])
-
-return {
-    CoreBypassSystem = CoreBypassSystem,
-    MarketplaceBypass = MarketplaceBypass,
-    GamepassBypass = GamepassBypass,
-    StatsEmulation = StatsEmulation,
-    RemoteBypass = RemoteBypass,
-    ModuleInjection = ModuleInjection,
-    TelemetrySystem = TelemetrySystem,
-    DeepScanEngine = DeepScanEngine,
-    exploitEngine = exploitEngine,
-    injectionSystem = injectionSystem,
-    defenseSystem = defenseSystem,
-    accessLevels = accessLevels,
-    backdoorDatabase = backdoorDatabase,
-    Fluent = Fluent,
-    Window = Window,
-    Tabs = Tabs
-}
