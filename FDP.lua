@@ -2259,12 +2259,14 @@ if hookmetamethod and (not checkcaller or type(checkcaller) == "function") then
         
         -- Interceptar llamadas de interés del primer script
         if (not checkcaller or not checkcaller()) then
+            local args = {...} -- <--- ESTA LÍNEA ES OBLIGATORIA para que funcione abajo
+
             -- Loggear llamadas importantes
             if method == "FireServer" or method == "InvokeServer" then
                 LogEvent("NETWORK", "DEBUG", "Remote llamado", {
                     Object = tostring(self),
                     Method = method,
-                    Args = {...}
+                    Args = args
                 })
             end
             
@@ -2281,10 +2283,11 @@ if hookmetamethod and (not checkcaller or type(checkcaller) == "function") then
             -- Bypass de compras del segundo script
             if CoreBypassSystem.States.PurchaseBypass then
                 if method and (method:lower():find("purchase") or method:lower():find("buy")) then
-                    LogEvent("MARKETPLACE", "BYPASS", "Purchase detected via namecall: " .. method)
+                    LogEvent("MARKETPLACE", "BYPASS", "Purchase detected via namecall: " .. tostring(method))
                     if self == Services.Marketplace then
                         task.spawn(function()
                             pcall(function()
+                                -- Ahora sí funcionará porque definimos 'args' arriba
                                 Services.Marketplace.PromptProductPurchaseFinished:Fire(LocalPlayer, args[1] or 0, true)
                             end)
                         end)
@@ -2297,8 +2300,7 @@ if hookmetamethod and (not checkcaller or type(checkcaller) == "function") then
         return originalNamecall(self, ...)
     end)
     
-    LogEvent("SYSTEM", "INFO", "Hooks avanzados fusionados instalados", {
-        Type = "MetaMethod",
+    LogEvent("SYSTEM", "INFO", "Hooks avanzados fusionados instalados", {        Type = "MetaMethod",
         Status = "ACTIVE"
     })
 end
